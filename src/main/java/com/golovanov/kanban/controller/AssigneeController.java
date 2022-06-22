@@ -2,12 +2,15 @@ package com.golovanov.kanban.controller;
 
 import com.golovanov.kanban.model.AssigneeEntity;
 import com.golovanov.kanban.service.AssigneeService;
+import com.golovanov.kanban.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+
+import static com.golovanov.kanban.common.MessageHelper.*;
 
 @RestController
 @RequestMapping("/assignees")
@@ -16,13 +19,14 @@ import java.util.Optional;
 public class AssigneeController {
 
     private final AssigneeService assigneeService;
+    private final TaskService taskService;
 
     @GetMapping("/")
     public ResponseEntity<?> getAllAssignees() {
         try {
             return new ResponseEntity<>(assigneeService.list(), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+            return internalServerError();
         }
     }
 
@@ -33,10 +37,10 @@ public class AssigneeController {
             if (assigneeOptional.isPresent()) {
                 return new ResponseEntity<>(assigneeOptional.get(), HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("Assignee not found", HttpStatus.NOT_FOUND);
+                return notFound();
             }
         } catch (Exception e) {
-            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+            return internalServerError();
         }
     }
 
@@ -45,7 +49,7 @@ public class AssigneeController {
         try {
             return new ResponseEntity<>(assigneeService.addNewAssignee(assignee), HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+            return internalServerError();
         }
     }
 
@@ -63,11 +67,30 @@ public class AssigneeController {
         return notFound();
     }
 
-    private ResponseEntity<?> notFound() {
-        return new ResponseEntity<>("Assignee not found", HttpStatus.NOT_FOUND);
+    @PostMapping("/{assigneeId}/{taskId}")
+    public ResponseEntity<?> assignTask(@PathVariable Integer assigneeId, @PathVariable Integer taskId) {
+        try {
+            if (assigneeService.getAssigneeEntityById(assigneeId).isPresent()
+                    && taskService.getTaskEntityById(taskId).isPresent()) {
+                assigneeService.addNewTaskToAssignee(assigneeId, taskId);
+                return okResponse();
+            }
+        } catch (Exception e) {
+            return internalServerError();
+        }
+        return notFound();
     }
-
-    private ResponseEntity<?> internalServerError() {
-        return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+    @PostMapping("/{assigneeId}/-{taskId}")
+    public ResponseEntity<?> unAssignTask(@PathVariable Integer assigneeId, @PathVariable Integer taskId) {
+        try {
+            if (assigneeService.getAssigneeEntityById(assigneeId).isPresent()
+                    && taskService.getTaskEntityById(taskId).isPresent()) {
+                assigneeService.removeTaskFromAssignee(assigneeId, taskId);
+                return okResponse();
+            }
+        } catch (Exception e) {
+            return internalServerError();
+        }
+        return notFound();
     }
 }

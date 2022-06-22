@@ -10,7 +10,6 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
 @Entity@Table(name = "assignee")
 public class AssigneeEntity {
@@ -22,7 +21,8 @@ public class AssigneeEntity {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "assignee")
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @JoinColumn(name = "assignee_id")
     private List<TaskEntity> tasks = new ArrayList<>();
 
     public void addTask(TaskEntity task) {

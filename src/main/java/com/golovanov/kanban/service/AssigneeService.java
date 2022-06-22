@@ -74,14 +74,13 @@ public class AssigneeService {
             if (taskOptional.isPresent()) {
                 AssigneeEntity assigneeEntity = assigneeOptional.get();
                 TaskEntity taskEntity = taskOptional.get();
-                taskEntity.setAssignee(assigneeEntity);
                 assigneeEntity.addTask(taskEntity);
                 AssigneeEntity modified = assigneeRepository.save(assigneeEntity);
                 taskRepository.save(taskEntity);
                 return modified.getId();
             }
         }
-        return -1;
+        return -1; //todo
     }
 
     @Transactional
@@ -93,12 +92,11 @@ public class AssigneeService {
                 AssigneeEntity assigneeEntity = assigneeOptional.get();
                 TaskEntity taskEntity = taskOptional.get();
                 assigneeEntity.removeTask(taskEntity);
-                taskEntity.setAssignee(null);
                 AssigneeEntity modified = assigneeRepository.save(assigneeEntity);
                 taskRepository.save(taskEntity);
                 return modified.getId();
             }
         }
-        return -1;
+        return -1; //todo
     }
 }

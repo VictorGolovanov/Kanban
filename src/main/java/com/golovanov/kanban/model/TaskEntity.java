@@ -1,5 +1,6 @@
 package com.golovanov.kanban.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -8,7 +9,6 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
 @Entity(name = "task")
 public class TaskEntity {
@@ -27,8 +27,8 @@ public class TaskEntity {
     @Column(name = "description")
     private String taskDescription;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "assignee_id", unique = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnore
     private AssigneeEntity assignee;
 
     @Override
