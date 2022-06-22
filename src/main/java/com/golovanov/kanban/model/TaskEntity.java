@@ -21,13 +21,14 @@ public class TaskEntity {
     private String taskName;
 
     @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
 
     @Column(name = "description")
     private String taskDescription;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "assignee_id", nullable = false, unique = true)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "assignee_id", unique = true)
     private AssigneeEntity assignee;
 
     @Override

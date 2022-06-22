@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,11 +22,16 @@ public class AssigneeEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "lastname")
-    private String lastName;
-
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "assignee")
-    private List<TaskEntity> tasks;
+    private List<TaskEntity> tasks = new ArrayList<>();
+
+    public void addTask(TaskEntity task) {
+        this.getTasks().add(task);
+    }
+
+    public void removeTask(TaskEntity task) {
+        this.getTasks().remove(task);
+    }
 
     @Override
     public boolean equals(Object o) {

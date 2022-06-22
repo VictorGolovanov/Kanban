@@ -31,13 +31,13 @@ public class TaskService {
     }
 
     @Transactional
-    public int addTask(TaskEntity taskEntity){
+    public int addNewTask(TaskEntity taskEntity){
         TaskEntity newTaskEntity = repository.save(taskEntity);
         return newTaskEntity.getId();
     }
 
     @Transactional
-    public ResponseEntity<Object> updateTaskById(int id, TaskEntity newTaskEntity){
+    public ResponseEntity<Object> updateTaskById(Integer id, TaskEntity newTaskEntity) {
         Optional<TaskEntity> taskOptional = repository.findById(id);
         if(taskOptional.isPresent()){
             newTaskEntity.setId(id);
@@ -48,7 +48,16 @@ public class TaskService {
     }
 
     @Transactional
-    public void delete(int id){
+    public void delete(Integer id) {
         repository.deleteById(id);
+    }
+
+    @Transactional
+    public ResponseEntity<Object> get(Integer id) {
+        Optional<TaskEntity> taskOptional = repository.findById(id);
+        if(taskOptional.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        return new ResponseEntity<>(taskOptional, HttpStatus.OK);
     }
 }

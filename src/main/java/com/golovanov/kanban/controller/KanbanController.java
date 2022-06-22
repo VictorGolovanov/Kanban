@@ -10,6 +10,6 @@ public class KanbanController {
 
     @RequestMapping
     public String index() {
-        return new Date().toString();
+        return new Date() + "\tWelcome home!";
     }
 }
