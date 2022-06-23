@@ -67,6 +67,21 @@ public class AssigneeController {
         return notFound();
     }
 
+    @PostMapping("/{id}/name")
+    public ResponseEntity<?> changeName(@PathVariable Integer id, @RequestParam String name) {
+        try {
+            if (assigneeService.getAssigneeEntityById(id).isPresent()) {
+                AssigneeEntity newAssigneeEntity = assigneeService.getAssigneeEntityById(id).get();
+                newAssigneeEntity.setName(name);
+                assigneeService.updateAssigneeById(id, newAssigneeEntity);
+                return okResponse();
+            }
+        } catch (Exception e) {
+            return internalServerError();
+        }
+        return notFound();
+    }
+
     @PostMapping("/{assigneeId}/{taskId}")
     public ResponseEntity<?> assignTask(@PathVariable Integer assigneeId, @PathVariable Integer taskId) {
         try {
@@ -80,6 +95,7 @@ public class AssigneeController {
         }
         return notFound();
     }
+
     @PostMapping("/{assigneeId}/-{taskId}")
     public ResponseEntity<?> unAssignTask(@PathVariable Integer assigneeId, @PathVariable Integer taskId) {
         try {

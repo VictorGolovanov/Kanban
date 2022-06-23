@@ -1,6 +1,5 @@
 package com.golovanov.kanban.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
@@ -26,10 +25,6 @@ public class TaskEntity {
 
     @Column(name = "description")
     private String taskDescription;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JsonIgnore
-    private AssigneeEntity assignee;
 
     @Override
     public boolean equals(Object o) {

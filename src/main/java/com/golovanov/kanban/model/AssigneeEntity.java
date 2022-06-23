@@ -21,7 +21,7 @@ public class AssigneeEntity {
     @Column(name = "name")
     private String name;
 
-    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     @JoinColumn(name = "assignee_id")
     private List<TaskEntity> tasks = new ArrayList<>();
 

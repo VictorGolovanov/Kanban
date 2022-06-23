@@ -10,7 +10,7 @@ public class MessageHelper {
     }
 
     public static ResponseEntity<?> notFound() {
-        return new ResponseEntity<>("Assignee not found", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Not found", HttpStatus.NOT_FOUND);
     }
 
     public static ResponseEntity<?> internalServerError() {
