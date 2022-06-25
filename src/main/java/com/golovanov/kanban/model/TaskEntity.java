@@ -1,6 +1,7 @@
 package com.golovanov.kanban.model;
 
-import jakarta.persistence.*;
+//import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
 

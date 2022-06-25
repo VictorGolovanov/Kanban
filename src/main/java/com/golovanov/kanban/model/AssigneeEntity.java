@@ -1,6 +1,8 @@
 package com.golovanov.kanban.model;
 
-import jakarta.persistence.*;
+//import jakarta.persistence.*;
+import javax.persistence.*;
+
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -11,7 +13,8 @@ import java.util.Objects;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Entity@Table(name = "assignee")
+@Entity
+@Table(name = "assignee")
 public class AssigneeEntity {
 
     @Id

@@ -8,8 +8,8 @@ import java.util.Date;
 @RestController
 public class KanbanController {
 
-    @RequestMapping
-    public String index() {
-        return new Date() + "\tWelcome home!";
-    }
+//    @RequestMapping
+//    public String index() {
+//        return new Date() + "\tWelcome home!";
+//    }
 }
