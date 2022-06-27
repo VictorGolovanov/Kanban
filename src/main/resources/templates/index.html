@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Kanban Board</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" th:href="@{/css/styles.css}"></link>
+</head>
+<body>
+    <h1>Kanban Board</h1>
+    <p>There should be front-end part of the app</p>
+
+    <div class="add-container">
+        <div id="add-assignee-form">
+            <form action="#" method="post" enctype="multipart/form-data">
+            <h2>Specify Assignee</h2>
+            <label>Assignee Name</label>
+            <input type="text" name="name" value="" placeholder="entere assignee name">
+            <hr>
+            <button type="submit" id="save-assignee">save</button>
+            <button type="reset">cancel</button>
+            </form>
+        </div>
+        
+        <div id="add-task-form">
+            <form action="#" method="post" enctype="multipart/form-data">
+                <h2>Specify Task</h2>
+                <label>Task Name</label>
+                <input type="text" name="taskName" value="" placeholder="enter short task name">
+                <hr>
+                <label>Task Description</label>
+                <input type="text" name="taskDescription" value="" placeholder="enter task description">
+                <hr>
+                <button type="submit" id="save-task">save</button>
+                <button type="reset">cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="container">
+        <div class="kanban-heading">
+            <strong class="kanban-heading-text">Kanban Board</strong>
+        </div>
+        <div class="kanban-board">
+            <div class="kanban-block" id="assignee">
+                <strong>assignee</strong>
+                <div id="assignee-list">
+                    <h2>Assignee List</h2>
+                    <div th:each="assignee : ${assignees}">
+                        <a href="#" class="assignee-link" th:attr="data-id=${assignee.id}" th:text="${assignee.name}"></a>
+                        <!-- <button class="edit-assignee" th:attr="data-id=${assignee.id}">change</button> -->
+                        <button class="delete-assignee" th:attr="data-id=${assignee.id}">delete</button>
+                        <br>
+                    </div>
+                </div>
+            </div>
+            <div class="kanban-block" id="todo">
+                <strong>To Do</strong>
+            </div>
+            <div class="kanban-block" id="inprogress">
+                <strong>In Progress</strong>
+            </div>
+            <div class="kanban-block" id="done">
+                <strong>Complete</strong>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" th:src="@{/js/jquery.js}"></script>
+    <script type="text/javascript" th:src="@{/js/main.js}"></script>
+</body>
+</html>

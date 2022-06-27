@@ -44,9 +44,9 @@ public class TaskController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> addNewTask(TaskEntity askEntity) {
+    public ResponseEntity<?> addNewTask(TaskEntity taskEntity) {
         try {
-            return new ResponseEntity<>(taskService.addNewTask(askEntity), HttpStatus.CREATED);
+            return new ResponseEntity<>(taskService.addNewTask(taskEntity), HttpStatus.CREATED);
         } catch (Exception e) {
             return internalServerError();
         }

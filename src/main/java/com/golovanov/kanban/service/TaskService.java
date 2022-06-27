@@ -1,6 +1,7 @@
 package com.golovanov.kanban.service;
 
 import com.golovanov.kanban.model.TaskEntity;
+import com.golovanov.kanban.model.TaskStatus;
 import com.golovanov.kanban.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,10 @@ public class TaskService {
     }
 
     @Transactional
-    public int addNewTask(TaskEntity taskEntity){
+    public int addNewTask(TaskEntity taskEntity) {
+        if (taskEntity.getStatus() == null) {
+            taskEntity.setStatus(TaskStatus.TODO);
+        }
         TaskEntity newTaskEntity = repository.save(taskEntity);
         return newTaskEntity.getId();
     }

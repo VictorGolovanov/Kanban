@@ -1,15 +1,15 @@
 package com.golovanov.kanban.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.Date;
-
-@RestController
+@Controller
 public class KanbanController {
 
-    @RequestMapping
-    public String index() {
-        return new Date() + "\tWelcome home!";
+    @GetMapping("/")
+    public String index(Model model) {
+//        model.addAttribute("name", name);
+        return "index";
     }
 }
