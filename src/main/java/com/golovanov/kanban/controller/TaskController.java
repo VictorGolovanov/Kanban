@@ -66,7 +66,27 @@ public class TaskController {
         return notFound();
     }
 
-    @PostMapping("/{id}/status")
+    @PostMapping(value = "/{id}")
+    public ResponseEntity<?> changeTask(@PathVariable Integer id,
+                                        @RequestParam String taskName,
+                                        @RequestParam String taskDescription,
+                                        @RequestParam String taskStatus) {
+        try {
+            if (taskService.getTaskEntityById(id).isPresent()) {
+                TaskEntity newTaskEntity = taskService.getTaskEntityById(id).get();
+                newTaskEntity.setTaskName(!taskName.isEmpty() ? taskName : newTaskEntity.getTaskName());
+                newTaskEntity.setTaskDescription(!taskDescription.isEmpty() ? taskDescription : newTaskEntity.getTaskDescription());
+                newTaskEntity.setStatus(!taskStatus.isEmpty() ? TaskStatus.valueOf(taskStatus) : newTaskEntity.getStatus());
+                taskService.updateTaskById(id, newTaskEntity);
+                return okResponse();
+            }
+        } catch (Exception e) {
+            return internalServerError();
+        }
+        return notFound();
+    }
+
+    @PutMapping("/{id}/status")
     public ResponseEntity<?> changeStatus(@PathVariable Integer id, @RequestParam String status) {
         try {
             if (taskService.getTaskEntityById(id).isPresent()) {

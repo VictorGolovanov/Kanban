@@ -36,6 +36,11 @@ public class AssigneeService {
     }
 
     @Transactional
+    public Optional<AssigneeEntity> getAssigneeEntityByName(String name) {
+        return assigneeRepository.findByName(name);
+    }
+
+    @Transactional
     public int addNewAssignee(AssigneeEntity assigneeEntity) {
         AssigneeEntity newAssigneeEntity = assigneeRepository.save(assigneeEntity);
         return newAssigneeEntity.getId();

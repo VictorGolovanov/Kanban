@@ -20,6 +20,7 @@ public class AssigneeController {
 
     private final AssigneeService assigneeService;
     private final TaskService taskService;
+    private final String NULL_PERSON = "Null-Person";
 
     @GetMapping("/")
     public ResponseEntity<?> getAllAssignees() {
@@ -47,6 +48,18 @@ public class AssigneeController {
     @PostMapping("/")
     public ResponseEntity<?> addNewAssignee(AssigneeEntity assignee) {
         try {
+            if (assigneeService.getAssigneeEntityByName(assignee.getName()).isPresent()) {
+                return new ResponseEntity<>("person with name " + assignee.getName() + " is already exists",
+                        HttpStatus.NOT_ACCEPTABLE);
+            }
+            if (assignee.getName().equals(NULL_PERSON)) {
+                return new ResponseEntity<>("This name is forbidden", HttpStatus.FORBIDDEN);
+            }
+            if (assigneeService.getAssigneeEntityByName(NULL_PERSON).isEmpty()) {
+                AssigneeEntity nullPerson = new AssigneeEntity();
+                nullPerson.setName(NULL_PERSON);
+                assigneeService.addNewAssignee(nullPerson);
+            }
             return new ResponseEntity<>(assigneeService.addNewAssignee(assignee), HttpStatus.CREATED);
         } catch (Exception e) {
             return internalServerError();
@@ -57,6 +70,7 @@ public class AssigneeController {
     public ResponseEntity<?> deleteAssignee(@PathVariable Integer id) {
         try {
             if (assigneeService.getAssigneeEntityById(id).isPresent()) {
+                //todo assign all tasks of deleted assignee to null-person
                 String name = assigneeService.getAssigneeEntityById(id).get().getName();
                 assigneeService.delete(id);
                 return new ResponseEntity<>(name +" deleted", HttpStatus.OK);
