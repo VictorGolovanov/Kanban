@@ -34,7 +34,14 @@ $(function(){
     });
 
     //Closing editing task form
-    $('#change-task-status-form').click(function(event) {
+    $('#change-task-form').click(function(event) {
+        if (event.target === this) {
+            $(this).css('display', 'none');
+        }
+    });
+
+    //Closing assigning task form
+    $('#assign-task-form').click(function(event) {
         if (event.target === this) {
             $(this).css('display', 'none');
         }
@@ -127,15 +134,15 @@ $(function(){
                     td.setAttribute('data-task-status', status);
                     if (groupedByStatus[status] != null) {
                         groupedByStatus[status].forEach((t, i) => {
-                            const taskWrapper = document.createElement('div');
-                            taskWrapper.classList.add('task-wrapper');
-                            taskWrapper.setAttribute('data-task-id', status + t.id);
-                            const taskName = document.createElement('div');
-                            taskName.classList.add('task-name');
-                            taskName.innerHTML = t.taskName;
+                            const taskWrapper = document.createElement('div')
+                            taskWrapper.classList.add('task-wrapper')
+                            taskWrapper.setAttribute('data-task-id', status + t.id)
+                            const taskName = document.createElement('div')
+                            taskName.classList.add('task-name')
+                            taskName.innerHTML = t.taskName
 
-                            const taskDescription = document.createElement('div');
-                            taskDescription.classList.add('task-description');
+                            const taskDescription = document.createElement('div')
+                            taskDescription.classList.add('task-description')
                             taskDescription.innerHTML = t.taskDescription;
 
                             const changeButton = document.createElement('button')
@@ -143,19 +150,26 @@ $(function(){
                             changeButton.innerHTML = "edit"
                             changeButton.addEventListener('click', () => changeTask(t))
 
+                            const assignButton = document.createElement('button')
+                            assignButton.classList.add("assign-task")
+                            assignButton.innerHTML = "assign"
+                            assignButton.addEventListener('click', () => assignTask(t))
+
+
 
                             const deleteButton = document.createElement('button')
                             deleteButton.classList.add("delete-task")
                             deleteButton.innerHTML = "delete"
-                            deleteButton.addEventListener('click', () => deleteTask(t));
+                            deleteButton.addEventListener('click', () => deleteTask(t))
 
-                            taskWrapper.appendChild(taskName);
-                            taskWrapper.appendChild(taskDescription);
-                            taskWrapper.appendChild(changeButton);
-                            taskWrapper.appendChild(deleteButton);
+                            taskWrapper.appendChild(taskName)
+                            taskWrapper.appendChild(taskDescription)
+                            taskWrapper.appendChild(changeButton)
+                            taskWrapper.appendChild(assignButton)
+                            taskWrapper.appendChild(deleteButton)
 
 
-                            td.appendChild(taskWrapper);
+                            td.appendChild(taskWrapper)
                         });
                     }
 
@@ -170,11 +184,11 @@ $(function(){
     function changeTask(t) {
         // window.alert('Task name ' + t.taskName)
         
-        $('#change-task-status-form input[name="taskName"]').val(t.taskName)
-        $('#change-task-status-form input[name="taskDescription"]').val(t.taskDescription)
-        $('#change-task-status-form input[name="taskStatus"]').val(t.status)
+        $('#change-task-form input[name="taskName"]').val(t.taskName)
+        $('#change-task-form input[name="taskDescription"]').val(t.taskDescription)
+        $('#change-task-form input[name="taskStatus"]').val(t.status)
 
-        const form = $('#change-task-status-form');
+        const form = $('#change-task-form');
         form.css({display: 'flex'});
 
         var taskId = t.id;
@@ -182,14 +196,14 @@ $(function(){
         $(document).on('click', '#save-changed-task', function() {
             var result = confirm('Are you sure? Your data will be overwriten.');
             if (result) {
-                var data = $('#change-task-status-form form').serialize();
+                var data = $('#change-task-form form').serialize();
                 console.log(data)
                 $.ajax({
                     method: 'POST',
                     url: '/tasks/' + taskId,
                     data: data,
                     success: function(response) {
-                        $('#change-task-status-form').css('display', 'none');
+                        $('#change-task-form').css('display', 'none');
                         var task = {};
                         task.id = taskId;
                         window.location.reload();
@@ -200,9 +214,43 @@ $(function(){
         });
     }
 
-    // function changeTask() {
-    //     window.alert('Not now ! ')
-    // }
+    function assignTask(t) {
+        // window.alert('!')
+        const form = $('#assign-task-form')
+        form.css({display: 'flex'})
+
+        $(document).on('click', '#save-new-assignee', function() {
+            // var confirm = confirm('Are you sure? You are going to reassign this task.')
+
+            // if (confirm) {
+                var data = $('#assign-task-form form').serialize();
+                console.log(data)
+
+                var assigneeName = data.replace('assigneeName=', '')
+                console.log(assigneeName)
+
+                $.ajax({
+                    method: 'GET',
+                    url: '/assignees/names/' + assigneeName,
+                    // data: assigneeName,
+                    success: function(response) {
+                        $('#assign-task-form').css('display', 'none')
+                        var assigneeId = response.id
+                        var taskId = t.id
+                        $.ajax({
+                            method: 'POST',
+                            url: '/assignees/' + assigneeId + '/' + taskId,
+                            success: function(response) {
+                                window.location.reload
+                            }
+                        })
+                    }
+                })
+            // }
+
+            return false;
+        });
+    }
 
     function deleteTask(t) {
         window.alert('Not now! ' + t.taskName)

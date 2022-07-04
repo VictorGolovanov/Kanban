@@ -45,6 +45,19 @@ public class AssigneeController {
         }
     }
 
+    @GetMapping("/names/{name}")
+    public ResponseEntity<?> getAssigneeByName(@PathVariable String name) {
+        try {
+            Optional<AssigneeEntity> assigneeOptional = assigneeService.getAssigneeEntityByName(name);
+            if (assigneeOptional.isPresent()) {
+                return new ResponseEntity<>(assigneeOptional.get(), HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            return internalServerError();
+        }
+        return notFound();
+    }
+
     @PostMapping("/")
     public ResponseEntity<?> addNewAssignee(AssigneeEntity assignee) {
         try {
