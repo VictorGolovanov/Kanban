@@ -51,10 +51,13 @@
         <input type="text" name="taskDescription" value="" placeholder="enter task description">
         <hr>
         <label>New Task Status</label>
-        <input type="text" name="taskStatus" value="" placeholder="enter task status">
+        <select name="taskStatus">
+            <option type="text" name="TODO">TODO</option>
+            <option type="text" name="INPROGRESS">INPROGRESS</option>
+            <option type="text" name="COMPLETE">COMPLETE</option>
+        </select>
         <hr>
         <button type="submit" id="save-changed-task">save</button>
-        <!-- <button type="reset">cancel</button> -->
     </form>
 </div>
 
@@ -64,6 +67,15 @@
         <input type="text" name="assigneeName" value="" placeholder="enter assignee name">
         <hr>
         <button type="submit" id="save-new-assignee">save</button>
+    </form>
+</div>
+
+<div id="change-assignee-form">
+    <form action="#" method="post" enctype="multipart/form-data">
+        <h2>Enter New Name</h2>
+        <input type="text" name="assigneeName" value="" placeholder="enter assignee name">
+        <hr>
+        <button type="submit" id="save-changed-assignee">save</button>
     </form>
 </div>
 

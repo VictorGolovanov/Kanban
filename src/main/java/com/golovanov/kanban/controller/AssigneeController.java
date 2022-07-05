@@ -69,9 +69,7 @@ public class AssigneeController {
                 return new ResponseEntity<>("This name is forbidden", HttpStatus.FORBIDDEN);
             }
             if (assigneeService.getAssigneeEntityByName(NULL_PERSON).isEmpty()) {
-                AssigneeEntity nullPerson = new AssigneeEntity();
-                nullPerson.setName(NULL_PERSON);
-                assigneeService.addNewAssignee(nullPerson);
+                getNullPersonEntity();
             }
             return new ResponseEntity<>(assigneeService.addNewAssignee(assignee), HttpStatus.CREATED);
         } catch (Exception e) {
@@ -83,8 +81,18 @@ public class AssigneeController {
     public ResponseEntity<?> deleteAssignee(@PathVariable Integer id) {
         try {
             if (assigneeService.getAssigneeEntityById(id).isPresent()) {
-                //todo assign all tasks of deleted assignee to null-person
                 String name = assigneeService.getAssigneeEntityById(id).get().getName();
+                if (name.equals(NULL_PERSON)) {
+                    return new ResponseEntity<>("You are not allowed to delete this person", HttpStatus.FORBIDDEN);
+                }
+                if (assigneeService.getAssigneeEntityById(id).get().getTasks().size() > 0) {
+                    if (assigneeService.getAssigneeEntityByName(NULL_PERSON).isPresent()) {
+                        AssigneeEntity nullPersonEntity = assigneeService.getAssigneeEntityByName(NULL_PERSON).get();
+                        assigneeService.getAssigneeEntityById(id).get().getTasks()
+                                .forEach(nullPersonEntity.getTasks()::add);
+                        assigneeService.updateAssigneeById(nullPersonEntity.getId(), nullPersonEntity);
+                    }
+                }
                 assigneeService.delete(id);
                 return new ResponseEntity<>(name +" deleted", HttpStatus.OK);
             }
@@ -94,12 +102,13 @@ public class AssigneeController {
         return notFound();
     }
 
-    @PostMapping("/{id}/name")
-    public ResponseEntity<?> changeName(@PathVariable Integer id, @RequestParam String name) {
+    @PostMapping("/name/{id}")
+    public ResponseEntity<?> changeName(@PathVariable Integer id, @RequestParam String assigneeName) {
         try {
-            if (assigneeService.getAssigneeEntityById(id).isPresent()) {
+            if (assigneeService.getAssigneeEntityById(id).isPresent()
+                    && assigneeService.getAssigneeEntityByName(assigneeName).isEmpty()) {
                 AssigneeEntity newAssigneeEntity = assigneeService.getAssigneeEntityById(id).get();
-                newAssigneeEntity.setName(name);
+                newAssigneeEntity.setName(assigneeName);
                 assigneeService.updateAssigneeById(id, newAssigneeEntity);
                 return okResponse();
             }
@@ -129,11 +138,23 @@ public class AssigneeController {
             if (assigneeService.getAssigneeEntityById(assigneeId).isPresent()
                     && taskService.getTaskEntityById(taskId).isPresent()) {
                 assigneeService.removeTaskFromAssignee(assigneeId, taskId);
+                AssigneeEntity nullPerson = getNullPersonEntity();
+                nullPerson.addTask(taskService.getTaskEntityById(taskId).get());
+                assigneeService.updateAssigneeById(nullPerson.getId(), nullPerson);
                 return okResponse();
             }
         } catch (Exception e) {
             return internalServerError();
         }
         return notFound();
+    }
+
+    private AssigneeEntity getNullPersonEntity() {
+        if (assigneeService.getAssigneeEntityByName(NULL_PERSON).isEmpty()) {
+            AssigneeEntity nullPerson = new AssigneeEntity();
+            nullPerson.setName(NULL_PERSON);
+            assigneeService.addNewAssigneeFlush(nullPerson);
+        }
+        return assigneeService.getAssigneeEntityByName(NULL_PERSON).get();
     }
 }

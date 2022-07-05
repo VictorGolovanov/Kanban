@@ -26,6 +26,7 @@ public class AssigneeService {
     @Transactional
     public List<AssigneeEntity> list() {
         List<AssigneeEntity> assigneeEntities = new ArrayList<>();
+//        assigneeRepository.findAll().forEach(assigneeEntities::add);
         assigneeRepository.findAll().forEach(assigneeEntities::add);
         return assigneeEntities;
     }
@@ -43,6 +44,12 @@ public class AssigneeService {
     @Transactional
     public int addNewAssignee(AssigneeEntity assigneeEntity) {
         AssigneeEntity newAssigneeEntity = assigneeRepository.save(assigneeEntity);
+        return newAssigneeEntity.getId();
+    }
+
+    @Transactional
+    public int addNewAssigneeFlush(AssigneeEntity assigneeEntity) {
+        AssigneeEntity newAssigneeEntity = assigneeRepository.saveAndFlush(assigneeEntity);
         return newAssigneeEntity.getId();
     }
 

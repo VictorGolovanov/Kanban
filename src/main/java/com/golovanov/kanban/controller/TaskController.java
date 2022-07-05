@@ -52,6 +52,7 @@ public class TaskController {
         }
     }
 
+    // probably it is not good practice
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTask(@PathVariable Integer id) {
         try {

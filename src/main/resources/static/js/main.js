@@ -1,25 +1,4 @@
-$(function(){
-
-    //Add task
-    $('#save-task').click(function() {
-        var data = $('#add-task-form form').serialize();
-        console.log(data)
-        $.ajax({
-            method: 'POST',
-            url: '/tasks/',
-            data: data,
-            success: function(response) {
-                $('#add-task-form').css('display', 'none');
-                var task = {};
-                task.id = response;
-                window.alert('Task with id ' + task.id + ' added')
-                // window.alert('OK!')
-                var dataArray = $('#add-task-form form').serializeArray();
-                window.location.reload();
-            }
-        });
-        return false;
-    });
+$(function() {
 
     //show adding task form
     $('#show-add-task-form').click(function() {
@@ -59,31 +38,20 @@ $(function(){
         }
     });
 
+    //show changing assignee form
+    $('#change-assignee-form').click(function() {
+        $('#change-assignee-form').css('display', 'flex');
+    });
 
-    //Add assignee
-    $('#save-assignee').click(function() {
-        var data = $('#add-assignee-form form').serialize();
-        console.log(data)
-        $.ajax({
-            method: 'POST',
-            url: '/assignees/',
-            data: data,
-            success: function(response) {
-                $('#add-assignee-form').css('display', 'none');
-                var assignee = {};
-                assignee.id = response
-                window.alert('Assignee with id ' + assignee.id + ' added')
-                // window.alert('OK!')
-                window.location.reload();
-            }
-        });
-        return false;
+    //Closing changing assignee form
+    $('#change-assignee-form').click(function(event) {
+        if (event.target === this) {
+            $(this).css('display', 'none');
+        }
     });
 
 
-
-    //render task list assignee
-    // $('#get-data').click(renderTaskList);
+    //board rendering
     $('#get-data').on('click', function() {
         $.ajax({
             method: 'GET',
@@ -108,7 +76,24 @@ $(function(){
             // assignee
             const assignee = document.createElement('td');
             assignee.classList.add('assignee');
-            assignee.innerHTML = el.name;
+            assignee.innerHTML = el.name === 'Null-Person' ? 'Anassigned tasks' : el.name;
+
+            if (el.name !== 'Null-Person') {
+                const editAssigneeButton = document.createElement('button')
+                editAssigneeButton.classList.add("change-assignee")
+                editAssigneeButton.innerHTML = "edit"
+                editAssigneeButton.addEventListener('click', () => changeAssignee(el))
+
+                const deleteAssigneeButton = document.createElement('button')
+                deleteAssigneeButton.classList.add("delete-assignee")
+                deleteAssigneeButton.innerHTML = "delete"
+                deleteAssigneeButton.addEventListener('click', () => deleteAssignee(el))
+
+                assignee.appendChild(editAssigneeButton)
+                assignee.appendChild(deleteAssigneeButton)
+
+            }
+
             row.appendChild(assignee);
 
             // tasks
@@ -180,10 +165,47 @@ $(function(){
         });
     }
 
+    //Add task
+    $('#save-task').click(function() {
+        var data = $('#add-task-form form').serialize();
+        console.log(data)
+        $.ajax({
+            method: 'POST',
+            url: '/tasks/',
+            data: data,
+            success: function(response) {
+                $('#add-task-form').css('display', 'none');
+                var task = {};
+                task.id = response;
+                window.alert('Task with id ' + task.id + ' added')
+                var dataArray = $('#add-task-form form').serializeArray();
+                window.location.reload();
+            }
+        });
+        return false;
+    });
 
-    function changeTask(t) {
-        // window.alert('Task name ' + t.taskName)
-        
+    //Add assignee
+    $('#save-assignee').click(function() {
+        var data = $('#add-assignee-form form').serialize();
+        console.log(data)
+        $.ajax({
+            method: 'POST',
+            url: '/assignees/',
+            data: data,
+            success: function(response) {
+                $('#add-assignee-form').css('display', 'none');
+                var assignee = {};
+                assignee.id = response
+                window.alert('Assignee with id ' + assignee.id + ' added')
+                window.location.reload();
+            }
+        });
+        return false;
+    });
+
+
+    function changeTask(t) {       
         $('#change-task-form input[name="taskName"]').val(t.taskName)
         $('#change-task-form input[name="taskDescription"]').val(t.taskDescription)
         $('#change-task-form input[name="taskStatus"]').val(t.status)
@@ -204,9 +226,6 @@ $(function(){
                     data: data,
                     success: function(response) {
                         $('#change-task-form').css('display', 'none');
-                        var task = {};
-                        task.id = taskId;
-                        window.location.reload();
                     }
                 });
             }
@@ -215,14 +234,12 @@ $(function(){
     }
 
     function assignTask(t) {
-        // window.alert('!')
         const form = $('#assign-task-form')
         form.css({display: 'flex'})
 
         $(document).on('click', '#save-new-assignee', function() {
-            // var confirm = confirm('Are you sure? You are going to reassign this task.')
-
-            // if (confirm) {
+            var result = confirm('Are you sure? You are going to reassign this task.')
+            if (result) {
                 var data = $('#assign-task-form form').serialize();
                 console.log(data)
 
@@ -232,7 +249,6 @@ $(function(){
                 $.ajax({
                     method: 'GET',
                     url: '/assignees/names/' + assigneeName,
-                    // data: assigneeName,
                     success: function(response) {
                         $('#assign-task-form').css('display', 'none')
                         var assigneeId = response.id
@@ -241,25 +257,65 @@ $(function(){
                             method: 'POST',
                             url: '/assignees/' + assigneeId + '/' + taskId,
                             success: function(response) {
-                                window.location.reload
+                                window.location.reload()
                             }
                         })
                     }
                 })
-            // }
+            }
 
             return false;
         });
     }
 
+    // probably is is not good practice
     function deleteTask(t) {
-        window.alert('Not now! ' + t.taskName)
+        var result = confirm('Are you sure? You are going to delete this task forever.')
+        if (result) {
+            $.ajax({
+                method: 'DELETE',
+                url: '/tasks/' + t.id,
+                success: function(response) {
+                    window.location.reload()
+                }
+            })
+        }
     }
 
-    // function deleteTask() {
-    //     window.alert('Not now! ')
-    // }
+    function changeAssignee(el) {
+        const form = $('#change-assignee-form')
+        form.css({display: 'flex'})
+        var assigneeId = el.id
+        $(document).on('click', '#save-changed-assignee', function() {
+            var result = confirm('Are you sure? Your data will be overwriten.')
+            if (result) {
+                var data = $('#change-assignee-form form').serialize()
+                console.log(data)
+                $.ajax({
+                    method: 'POST',
+                    url: '/assignees/name/' + assigneeId,
+                    data: data,
+                    success: function(response) {
+                        form.css({display: 'none'})
+                    }
+                })
+            }
+            return false
+        })
+    }
 
-    //
+    // probably is is not good practice too
+    function deleteAssignee(el) {
+        var result = confirm('Are you sure? You are going to delete assignee forever.')
+        if (result) {
+            $.ajax({
+                method: 'DELETE',
+                url: '/assignees/' + el.id,
+                success: function(response) {
+                    window.location.reload()
+                }
+            })
+        }
+    }
 
 })
